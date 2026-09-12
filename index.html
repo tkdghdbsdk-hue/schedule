@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#6C7CFF" />
-  <title>학교 시간표 by 김상호</title>
+  <title>학교생활 한눈에</title>
 
   <style>
     :root{
@@ -16,7 +16,6 @@
       --primary2:#8a6cff;
       --line:#e8ebf7;
       --shadow:0 12px 30px rgba(69,80,140,.12);
-
       --breakfast:#ffb84d;
       --lunch:#55c98f;
       --dinner:#7c83ff;
@@ -51,12 +50,12 @@
     }
 
     .hero::after{
-      content:"🏫";
+      content:"🍱";
       position:absolute;
       right:18px;
-      top:8px;
+      top:6px;
       font-size:76px;
-      opacity:.16;
+      opacity:.17;
       transform:rotate(-8deg);
     }
 
@@ -78,6 +77,7 @@
       margin:8px 0 0;
       font-size:14px;
       opacity:.9;
+      line-height:1.55;
     }
 
     .search-card{
@@ -140,6 +140,43 @@
       font-family:inherit;
       cursor:pointer;
       border:0;
+    }
+
+    .optional-toggle{
+      width:100%;
+      min-height:48px;
+      border-radius:15px;
+      background:#f5f6ff;
+      color:#59639b;
+      border:1px solid #e4e7fa;
+      font-size:14px;
+      font-weight:800;
+      margin:2px 0 12px;
+      transition:.2s;
+    }
+
+    .optional-toggle:hover{
+      background:#eef0ff;
+    }
+
+    .timetable-options{
+      display:none;
+      padding:13px 13px 1px;
+      margin:0 0 12px;
+      border:1px solid #e6e9fb;
+      border-radius:18px;
+      background:#fafaff;
+    }
+
+    .timetable-options.show{
+      display:block;
+    }
+
+    .optional-note{
+      color:var(--sub);
+      font-size:12px;
+      line-height:1.5;
+      margin:0 2px 12px;
     }
 
     .search-btn{
@@ -225,7 +262,6 @@
 
     .tabs{
       display:none;
-      grid-template-columns:repeat(3,1fr);
       gap:8px;
       background:white;
       border:1px solid var(--line);
@@ -238,7 +274,10 @@
       z-index:10;
     }
 
-    .tabs.show{display:grid}
+    .tabs.show{
+      display:grid;
+      grid-template-columns:repeat(var(--tab-count, 2),1fr);
+    }
 
     .tab-btn{
       height:44px;
@@ -253,6 +292,10 @@
       background:linear-gradient(135deg,var(--primary),var(--primary2));
       color:white;
       box-shadow:0 6px 14px rgba(108,124,255,.2);
+    }
+
+    .tab-btn.hidden{
+      display:none;
     }
 
     .panel{display:none}
@@ -433,12 +476,128 @@
       margin-right:6px;
     }
 
+
+    .calendar-card{
+      background:white;
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:16px;
+      box-shadow:0 8px 24px rgba(73,82,128,.08);
+    }
+
+    .calendar-header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:14px;
+    }
+
+    .calendar-header h3{
+      margin:0;
+      font-size:18px;
+      letter-spacing:-.3px;
+    }
+
+    .calendar-grid{
+      display:grid;
+      grid-template-columns:repeat(7,1fr);
+      gap:6px;
+    }
+
+    .weekday{
+      text-align:center;
+      font-size:12px;
+      font-weight:800;
+      color:#8d94aa;
+      padding:6px 0 8px;
+    }
+
+    .weekday.sun{color:#ff6f91}
+    .weekday.sat{color:#5b82e6}
+
+    .calendar-day{
+      min-height:78px;
+      border:1px solid #edf0f8;
+      border-radius:13px;
+      background:#fbfcff;
+      padding:7px 6px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .calendar-day.empty{
+      background:transparent;
+      border-color:transparent;
+    }
+
+    .calendar-day.today{
+      border:2px solid #8c97ff;
+    }
+
+    .calendar-day.selected{
+      background:#f1f3ff;
+      border-color:#aab2ff;
+    }
+
+    .day-number{
+      font-size:12px;
+      font-weight:900;
+      margin-bottom:5px;
+    }
+
+    .calendar-day.sun .day-number{color:#ff6688}
+    .calendar-day.sat .day-number{color:#557de0}
+
+    .calendar-event{
+      display:block;
+      font-size:10px;
+      line-height:1.3;
+      background:#fff0f4;
+      color:#a14d68;
+      border-radius:7px;
+      padding:3px 4px;
+      margin-top:3px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .calendar-more{
+      font-size:9px;
+      color:#8e94a8;
+      margin-top:3px;
+      display:block;
+    }
+
+    .calendar-detail{
+      margin-top:14px;
+      display:grid;
+      gap:10px;
+    }
+
+    .calendar-detail-title{
+      font-size:14px;
+      font-weight:900;
+      margin:2px 2px 0;
+    }
+
+    @media (max-width:390px){
+      .calendar-day{
+        min-height:70px;
+        padding:6px 4px;
+      }
+      .calendar-event{
+        font-size:9px;
+      }
+    }
+
     @keyframes spin{to{transform:rotate(360deg)}}
 
     @media (max-width:390px){
       .app{padding-left:12px;padding-right:12px}
       .hero h1{font-size:25px}
-      .tab-btn{font-size:13px}
+      .tab-btn{font-size:12px}
     }
   </style>
 </head>
@@ -448,8 +607,8 @@
 
     <section class="hero">
       <div class="eyebrow">NEIS 학교생활 조회</div>
-      <h1>학교생활 한눈에 ✨</h1>
-      <p>급식, 시간표, 학사일정을 한 번에 확인해요.</p>
+      <h1>오늘 뭐 먹지? 🍚</h1>
+      <p>학교와 날짜만 고르면 급식과 학교 일정을 바로 확인할 수 있어요.</p>
     </section>
 
     <section class="search-card">
@@ -465,32 +624,43 @@
         <input id="targetDate" type="date" />
       </div>
 
-      <div class="row">
-        <div>
-          <label class="label" for="grade">학년</label>
-          <div class="field">
-            <span>🎒</span>
-            <select id="grade">
-              <option value="1">1학년</option>
-              <option value="2">2학년</option>
-              <option value="3">3학년</option>
-              <option value="4">4학년</option>
-              <option value="5">5학년</option>
-              <option value="6">6학년</option>
-            </select>
+      <button class="optional-toggle" id="timetableToggle" type="button">
+        📚 시간표도 볼래요
+      </button>
+
+      <div class="timetable-options" id="timetableOptions">
+        <div class="row">
+          <div>
+            <label class="label" for="grade">학년</label>
+            <div class="field">
+              <span>🎒</span>
+              <select id="grade">
+                <option value="">선택</option>
+                <option value="1">1학년</option>
+                <option value="2">2학년</option>
+                <option value="3">3학년</option>
+                <option value="4">4학년</option>
+                <option value="5">5학년</option>
+                <option value="6">6학년</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="label" for="className">반</label>
+            <div class="field">
+              <span>👥</span>
+              <input id="className" type="number" min="1" max="30" placeholder="예: 1" inputmode="numeric" />
+            </div>
           </div>
         </div>
 
-        <div>
-          <label class="label" for="className">반</label>
-          <div class="field">
-            <span>👥</span>
-            <input id="className" type="number" min="1" max="30" value="1" inputmode="numeric" />
-          </div>
-        </div>
+        <p class="optional-note">
+          학년과 반을 모두 선택하면 시간표가 급식 다음 탭에 함께 표시됩니다.
+        </p>
       </div>
 
-      <button class="search-btn" id="searchBtn">학교생활 확인하기</button>
+      <button class="search-btn" id="searchBtn">급식·학교일정 보기</button>
 
       <div class="status" id="status"></div>
       <div class="school-options" id="schoolOptions"></div>
@@ -499,14 +669,14 @@
     <section class="result-head" id="resultHead">
       <div>
         <h2 id="selectedSchool">학교명</h2>
-        <p id="selectedClass">1학년 1반</p>
+        <p id="selectedInfo">급식 · 학사일정</p>
       </div>
       <div class="date-badge" id="selectedDate"></div>
     </section>
 
     <nav class="tabs" id="tabs">
       <button class="tab-btn active" data-tab="meal">🍚 급식</button>
-      <button class="tab-btn" data-tab="timetable">📚 시간표</button>
+      <button class="tab-btn hidden" id="timetableTab" data-tab="timetable">📚 시간표</button>
       <button class="tab-btn" data-tab="schedule">🎉 학사일정</button>
     </nav>
 
@@ -519,7 +689,7 @@
     </section>
 
     <section class="panel" id="schedulePanel">
-      <div class="event-list" id="eventList"></div>
+      <div id="calendarWrap"></div>
     </section>
 
     <div class="footer">
@@ -530,7 +700,6 @@
   </main>
 
   <script>
-    // 기존 파일의 API 키를 그대로 유지합니다.
     const API_KEY = "8803359172584ffca3e784292927cdcb";
 
     const schoolNameInput = document.getElementById("schoolName");
@@ -538,20 +707,24 @@
     const gradeInput = document.getElementById("grade");
     const classNameInput = document.getElementById("className");
 
+    const timetableToggle = document.getElementById("timetableToggle");
+    const timetableOptions = document.getElementById("timetableOptions");
+
     const searchBtn = document.getElementById("searchBtn");
     const statusEl = document.getElementById("status");
     const optionsEl = document.getElementById("schoolOptions");
 
     const resultHeadEl = document.getElementById("resultHead");
     const selectedSchoolEl = document.getElementById("selectedSchool");
-    const selectedClassEl = document.getElementById("selectedClass");
+    const selectedInfoEl = document.getElementById("selectedInfo");
     const selectedDateEl = document.getElementById("selectedDate");
 
     const tabsEl = document.getElementById("tabs");
+    const timetableTab = document.getElementById("timetableTab");
 
     const mealListEl = document.getElementById("mealList");
     const timetableListEl = document.getElementById("timetableList");
-    const eventListEl = document.getElementById("eventList");
+    const calendarWrapEl = document.getElementById("calendarWrap");
 
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -559,8 +732,20 @@
     const dd = String(today.getDate()).padStart(2, "0");
     targetDateInput.value = `${yyyy}-${mm}-${dd}`;
 
+    timetableToggle.addEventListener("click", () => {
+      const isOpen = timetableOptions.classList.toggle("show");
+
+      timetableToggle.textContent = isOpen
+        ? "✕ 시간표 입력 닫기"
+        : "📚 시간표도 볼래요";
+
+      if (isOpen) gradeInput.focus();
+    });
+
     document.querySelectorAll(".tab-btn").forEach(button => {
       button.addEventListener("click", () => {
+        if (button.classList.contains("hidden")) return;
+
         document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
         document.querySelectorAll(".panel").forEach(panel => panel.classList.remove("active"));
 
@@ -570,6 +755,14 @@
         document.getElementById(`${tab}Panel`).classList.add("active");
       });
     });
+
+    function activateMealTab() {
+      document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".panel").forEach(panel => panel.classList.remove("active"));
+
+      document.querySelector('[data-tab="meal"]').classList.add("active");
+      document.getElementById("mealPanel").classList.add("active");
+    }
 
     function setStatus(message, loading = false) {
       statusEl.innerHTML = loading
@@ -641,10 +834,31 @@
     function clearResults() {
       mealListEl.innerHTML = "";
       timetableListEl.innerHTML = "";
-      eventListEl.innerHTML = "";
+      calendarWrapEl.innerHTML = "";
 
       resultHeadEl.classList.remove("show");
       tabsEl.classList.remove("show");
+    }
+
+    function wantsTimetable() {
+      const grade = gradeInput.value.trim();
+      const className = classNameInput.value.trim();
+
+      return grade !== "" && className !== "";
+    }
+
+    function configureTabs(includeTimetable) {
+      activateMealTab();
+
+      if (includeTimetable) {
+        timetableTab.classList.remove("hidden");
+        tabsEl.style.setProperty("--tab-count", "3");
+      } else {
+        timetableTab.classList.add("hidden");
+        tabsEl.style.setProperty("--tab-count", "2");
+      }
+
+      tabsEl.classList.add("show");
     }
 
     async function searchSchool() {
@@ -662,6 +876,17 @@
 
       if (!dateValue) {
         setStatus("날짜를 선택해주세요. 📅");
+        return;
+      }
+
+      const oneTimetableFieldOnly =
+        (gradeInput.value.trim() && !classNameInput.value.trim()) ||
+        (!gradeInput.value.trim() && classNameInput.value.trim());
+
+      if (oneTimetableFieldOnly) {
+        timetableOptions.classList.add("show");
+        timetableToggle.textContent = "✕ 시간표 입력 닫기";
+        setStatus("시간표를 보려면 학년과 반을 모두 입력해주세요.");
         return;
       }
 
@@ -725,35 +950,52 @@
       optionsEl.innerHTML = "";
 
       const dateValue = targetDateInput.value;
-      const grade = gradeInput.value;
-      const className = classNameInput.value.trim() || "1";
+      const includeTimetable = wantsTimetable();
+      const grade = gradeInput.value.trim();
+      const className = classNameInput.value.trim();
 
       selectedSchoolEl.textContent = school.SCHUL_NM;
-      selectedClassEl.textContent =
-        `${grade}학년 ${className}반 · ${school.SCHUL_KND_SC_NM || ""}`;
       selectedDateEl.textContent = formatDateForScreen(dateValue);
 
+      selectedInfoEl.textContent = includeTimetable
+        ? `${grade}학년 ${className}반 · 급식 · 시간표 · 학사일정`
+        : "급식 · 학사일정";
+
       resultHeadEl.classList.add("show");
-      tabsEl.classList.add("show");
+      configureTabs(includeTimetable);
 
       mealListEl.innerHTML = createLoadingCard("급식을 불러오는 중...");
-      timetableListEl.innerHTML = createLoadingCard("시간표를 불러오는 중...");
-      eventListEl.innerHTML = createLoadingCard("학사일정을 불러오는 중...");
+      calendarWrapEl.innerHTML = createLoadingCard("이번 달 학사일정을 불러오는 중...");
 
-      setStatus("학교생활 정보를 불러오고 있어요...", true);
+      if (includeTimetable) {
+        timetableListEl.innerHTML = createLoadingCard("시간표를 불러오는 중...");
+      } else {
+        timetableListEl.innerHTML = "";
+      }
 
-      const results = await Promise.allSettled([
+      setStatus(
+        includeTimetable
+          ? "급식, 시간표, 학사일정을 불러오고 있어요..."
+          : "급식과 학사일정을 불러오고 있어요...",
+        true
+      );
+
+      const tasks = [
         loadMeals(school, dateValue),
-        loadTimetable(school, dateValue, grade, className),
         loadSchedule(school, dateValue)
-      ]);
+      ];
 
+      if (includeTimetable) {
+        tasks.splice(1, 0, loadTimetable(school, dateValue, grade, className));
+      }
+
+      const results = await Promise.allSettled(tasks);
       const failCount = results.filter(r => r.status === "rejected").length;
 
       if (failCount === 0) {
-        setStatus("학교생활 정보를 모두 찾았어요! ✨");
+        setStatus(includeTimetable ? "학교생활 정보를 모두 찾았어요! ✨" : "급식과 학사일정을 찾았어요! 😋");
       } else {
-        setStatus(`일부 정보를 불러오지 못했어요. (${3 - failCount}/3 항목 성공)`);
+        setStatus(`일부 정보를 불러오지 못했어요. (${results.length - failCount}/${results.length} 항목 성공)`);
       }
     }
 
@@ -898,7 +1140,12 @@
     }
 
     async function loadSchedule(school, dateValue) {
-      const date = formatDateForApi(dateValue);
+      const [year, month] = dateValue.split("-").map(Number);
+
+      const firstDate = `${year}${String(month).padStart(2, "0")}01`;
+
+      const lastDay = new Date(year, month, 0).getDate();
+      const lastDate = `${year}${String(month).padStart(2, "0")}${String(lastDay).padStart(2, "0")}`;
 
       const url =
         `https://open.neis.go.kr/hub/SchoolSchedule` +
@@ -906,31 +1153,154 @@
         `&Type=json&pIndex=1&pSize=100` +
         `&ATPT_OFCDC_SC_CODE=${encodeURIComponent(school.ATPT_OFCDC_SC_CODE)}` +
         `&SD_SCHUL_CODE=${encodeURIComponent(school.SD_SCHUL_CODE)}` +
-        `&AA_YMD=${date}`;
+        `&AA_FROM_YMD=${firstDate}` +
+        `&AA_TO_YMD=${lastDate}`;
 
       try {
         const data = await fetchJson(url);
         const rows = getRows(data, "SchoolSchedule");
-        renderSchedule(rows);
+        renderCalendar(rows, dateValue);
       } catch (error) {
         console.error("학사일정 오류", error);
-        renderSchedule([], "학사일정을 불러오지 못했어요.");
+        calendarWrapEl.innerHTML = createEmptyCard(
+          "🎈",
+          "학사일정을 불러오지 못했어요."
+        );
         throw error;
       }
     }
 
-    function renderSchedule(rows, customMessage = "") {
-      eventListEl.innerHTML = "";
+    function renderCalendar(rows, selectedDate) {
+      calendarWrapEl.innerHTML = "";
 
-      if (!rows.length) {
-        eventListEl.innerHTML = createEmptyCard(
-          "🎈",
-          customMessage || "선택한 날짜에 등록된 학사일정이 없어요."
-        );
-        return;
-      }
+      const [year, month, selectedDay] = selectedDate.split("-").map(Number);
+      const firstWeekday = new Date(year, month - 1, 1).getDay();
+      const lastDay = new Date(year, month, 0).getDate();
+
+      const eventsByDay = {};
 
       rows.forEach(item => {
+        const raw = String(item.AA_YMD || "");
+        if (raw.length !== 8) return;
+
+        const day = Number(raw.slice(6, 8));
+
+        if (!eventsByDay[day]) eventsByDay[day] = [];
+        eventsByDay[day].push(item);
+      });
+
+      const card = document.createElement("div");
+      card.className = "calendar-card";
+
+      const header = document.createElement("div");
+      header.className = "calendar-header";
+      header.innerHTML = `
+        <h3>📅 ${year}년 ${month}월 학사일정</h3>
+        <div class="cal">${rows.length}개 일정</div>
+      `;
+
+      const grid = document.createElement("div");
+      grid.className = "calendar-grid";
+
+      const weekdays = ["일","월","화","수","목","금","토"];
+      weekdays.forEach((w, i) => {
+        const el = document.createElement("div");
+        el.className = `weekday ${i === 0 ? "sun" : i === 6 ? "sat" : ""}`;
+        el.textContent = w;
+        grid.appendChild(el);
+      });
+
+      for (let i = 0; i < firstWeekday; i++) {
+        const blank = document.createElement("div");
+        blank.className = "calendar-day empty";
+        grid.appendChild(blank);
+      }
+
+      const today = new Date();
+
+      for (let day = 1; day <= lastDay; day++) {
+        const weekday = new Date(year, month - 1, day).getDay();
+        const dayEl = document.createElement("div");
+
+        const isToday =
+          today.getFullYear() === year &&
+          today.getMonth() + 1 === month &&
+          today.getDate() === day;
+
+        const isSelected = day === selectedDay;
+
+        dayEl.className =
+          `calendar-day ${weekday === 0 ? "sun" : weekday === 6 ? "sat" : ""}` +
+          `${isToday ? " today" : ""}` +
+          `${isSelected ? " selected" : ""}`;
+
+        const number = document.createElement("div");
+        number.className = "day-number";
+        number.textContent = day;
+        dayEl.appendChild(number);
+
+        const dayEvents = eventsByDay[day] || [];
+
+        dayEvents.slice(0, 2).forEach(event => {
+          const ev = document.createElement("span");
+          ev.className = "calendar-event";
+          ev.textContent = event.EVENT_NM || "학교 행사";
+          ev.title = event.EVENT_NM || "학교 행사";
+          dayEl.appendChild(ev);
+        });
+
+        if (dayEvents.length > 2) {
+          const more = document.createElement("span");
+          more.className = "calendar-more";
+          more.textContent = `+${dayEvents.length - 2}개`;
+          dayEl.appendChild(more);
+        }
+
+        if (dayEvents.length > 0) {
+          dayEl.style.cursor = "pointer";
+          dayEl.addEventListener("click", () => {
+            renderCalendarDetails(day, dayEvents, year, month);
+          });
+        }
+
+        grid.appendChild(dayEl);
+      }
+
+      const details = document.createElement("div");
+      details.id = "calendarDetails";
+      details.className = "calendar-detail";
+
+      card.appendChild(header);
+      card.appendChild(grid);
+      card.appendChild(details);
+
+      calendarWrapEl.appendChild(card);
+
+      const selectedEvents = eventsByDay[selectedDay] || [];
+
+      if (selectedEvents.length > 0) {
+        renderCalendarDetails(selectedDay, selectedEvents, year, month);
+      } else {
+        details.innerHTML = `
+          <div class="calendar-detail-title">
+            ${month}월 ${selectedDay}일
+          </div>
+          ${createEmptyCard("🎈", "선택한 날짜에 등록된 학사일정이 없어요.")}
+        `;
+      }
+    }
+
+    function renderCalendarDetails(day, events, year, month) {
+      const details = document.getElementById("calendarDetails");
+      if (!details) return;
+
+      details.innerHTML = `
+        <div class="calendar-detail-title">
+          ${month}월 ${day}일 일정
+        </div>
+      `;
+
+      events.forEach(item => {
         const card = document.createElement("article");
         card.className = "event-card";
 
@@ -953,7 +1323,7 @@
           ${targetHtml}
         `;
 
-        eventListEl.appendChild(card);
+        details.appendChild(card);
       });
     }
 
