@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6C7CFF" />
+  <title>학교 시간표 by 김상호</title>
+
+  <style>
+    :root{
+      --bg:#f5f7ff;
+      --card:#ffffff;
+      --text:#20243a;
+      --sub:#7a819b;
+      --primary:#6c7cff;
+      --primary2:#8a6cff;
+      --line:#e8ebf7;
+      --shadow:0 12px 30px rgba(69,80,140,.12);
+
+      --breakfast:#ffb84d;
+      --lunch:#55c98f;
+      --dinner:#7c83ff;
+      --schedule:#ff7d9c;
+    }
+
+    *{box-sizing:border-box}
+
+    body{
+      margin:0;
+      font-family:"Pretendard","Noto Sans KR",system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:linear-gradient(180deg,#eef1ff 0%,#f8f9ff 42%,#f5f7ff 100%);
+      color:var(--text);
+      min-height:100vh;
+    }
+
+    .app{
+      width:min(100%,560px);
+      margin:0 auto;
+      padding:24px 16px 44px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+      border-radius:28px;
+      padding:24px 20px;
+      color:white;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"🏫";
+      position:absolute;
+      right:18px;
+      top:8px;
+      font-size:76px;
+      opacity:.16;
+      transform:rotate(-8deg);
+    }
+
+    .hero .eyebrow{
+      font-size:13px;
+      font-weight:700;
+      opacity:.88;
+      margin-bottom:7px;
+    }
+
+    .hero h1{
+      margin:0;
+      font-size:28px;
+      line-height:1.2;
+      letter-spacing:-.7px;
+    }
+
+    .hero p{
+      margin:8px 0 0;
+      font-size:14px;
+      opacity:.9;
+    }
+
+    .search-card{
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.9);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      margin-bottom:18px;
+    }
+
+    .label{
+      display:block;
+      font-size:13px;
+      font-weight:800;
+      margin-bottom:8px;
+    }
+
+    .field{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:#f8f9ff;
+      border:1.5px solid var(--line);
+      border-radius:16px;
+      padding:0 14px;
+      margin-bottom:12px;
+      transition:.2s;
+    }
+
+    .field:focus-within{
+      border-color:#9aa5ff;
+      box-shadow:0 0 0 4px rgba(108,124,255,.09);
+      background:#fff;
+    }
+
+    .field span{
+      font-size:19px;
+      flex:none;
+    }
+
+    input, select{
+      width:100%;
+      height:52px;
+      border:0;
+      outline:0;
+      background:transparent;
+      font-size:16px;
+      color:var(--text);
+      font-family:inherit;
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    button{
+      font-family:inherit;
+      cursor:pointer;
+      border:0;
+    }
+
+    .search-btn{
+      width:100%;
+      height:54px;
+      border-radius:16px;
+      color:white;
+      font-size:16px;
+      font-weight:800;
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+      box-shadow:0 8px 18px rgba(108,124,255,.25);
+    }
+
+    .search-btn:active{transform:translateY(1px)}
+
+    .status{
+      text-align:center;
+      color:var(--sub);
+      font-size:14px;
+      padding:10px 4px 2px;
+      min-height:26px;
+      line-height:1.55;
+    }
+
+    .school-options{
+      display:grid;
+      gap:10px;
+      margin-top:12px;
+    }
+
+    .school-option{
+      text-align:left;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:15px;
+      background:#fbfbff;
+    }
+
+    .school-option strong{
+      display:block;
+      font-size:15px;
+      margin-bottom:5px;
+    }
+
+    .school-option small{
+      display:block;
+      color:var(--sub);
+      line-height:1.45;
+    }
+
+    .result-head{
+      display:none;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      margin:22px 4px 12px;
+    }
+
+    .result-head.show{display:flex}
+
+    .result-head h2{
+      margin:0;
+      font-size:20px;
+      letter-spacing:-.4px;
+    }
+
+    .result-head p{
+      margin:5px 0 0;
+      color:var(--sub);
+      font-size:13px;
+    }
+
+    .date-badge{
+      flex:none;
+      background:white;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:9px 11px;
+      font-size:12px;
+      font-weight:800;
+      box-shadow:0 5px 14px rgba(80,88,130,.08);
+    }
+
+    .tabs{
+      display:none;
+      grid-template-columns:repeat(3,1fr);
+      gap:8px;
+      background:white;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:6px;
+      box-shadow:0 8px 22px rgba(73,82,128,.08);
+      margin-bottom:14px;
+      position:sticky;
+      top:8px;
+      z-index:10;
+    }
+
+    .tabs.show{display:grid}
+
+    .tab-btn{
+      height:44px;
+      border-radius:13px;
+      background:transparent;
+      color:#777e96;
+      font-size:14px;
+      font-weight:800;
+    }
+
+    .tab-btn.active{
+      background:linear-gradient(135deg,var(--primary),var(--primary2));
+      color:white;
+      box-shadow:0 6px 14px rgba(108,124,255,.2);
+    }
+
+    .panel{display:none}
+    .panel.active{display:block}
+
+    .meal-list,
+    .timetable,
+    .event-list{
+      display:grid;
+      gap:13px;
+    }
+
+    .meal-card{
+      background:var(--card);
+      border:1px solid rgba(232,235,247,.95);
+      border-radius:22px;
+      padding:18px;
+      box-shadow:0 8px 24px rgba(73,82,128,.08);
+    }
+
+    .meal-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:14px;
+      gap:10px;
+    }
+
+    .meal-title{
+      display:flex;
+      align-items:center;
+      gap:9px;
+      font-size:17px;
+      font-weight:900;
+    }
+
+    .dot{
+      width:11px;
+      height:11px;
+      border-radius:50%;
+      flex:none;
+    }
+
+    .breakfast .dot{background:var(--breakfast)}
+    .lunch .dot{background:var(--lunch)}
+    .dinner .dot{background:var(--dinner)}
+
+    .cal{
+      background:#f6f7fc;
+      color:#60677e;
+      padding:7px 9px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .menu{
+      line-height:1.85;
+      font-size:15px;
+      word-break:keep-all;
+    }
+
+    .empty{
+      color:#9aa0b4;
+      font-size:14px;
+      padding:3px 0;
+    }
+
+    .empty-box{
+      background:white;
+      border:1px dashed #dfe3f2;
+      border-radius:20px;
+      padding:28px 16px;
+      text-align:center;
+      color:#9299ad;
+      box-shadow:0 8px 24px rgba(73,82,128,.05);
+    }
+
+    .empty-box .emoji{
+      display:block;
+      font-size:34px;
+      margin-bottom:8px;
+    }
+
+    .period-card{
+      display:flex;
+      gap:13px;
+      align-items:center;
+      background:white;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      box-shadow:0 7px 18px rgba(73,82,128,.07);
+    }
+
+    .period-number{
+      width:48px;
+      height:48px;
+      border-radius:15px;
+      background:#eef6ff;
+      color:#398fe8;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      font-size:14px;
+      flex:none;
+    }
+
+    .period-content strong{
+      display:block;
+      font-size:16px;
+      margin-bottom:4px;
+    }
+
+    .period-content small{
+      color:var(--sub);
+      font-size:12px;
+    }
+
+    .event-card{
+      background:white;
+      border:1px solid var(--line);
+      border-left:5px solid var(--schedule);
+      border-radius:20px;
+      padding:17px;
+      box-shadow:0 7px 18px rgba(73,82,128,.07);
+    }
+
+    .event-card strong{
+      display:block;
+      font-size:16px;
+      margin-bottom:8px;
+    }
+
+    .event-card p{
+      margin:0;
+      color:#626980;
+      font-size:14px;
+      line-height:1.65;
+      white-space:pre-line;
+    }
+
+    .event-target{
+      display:flex;
+      flex-wrap:wrap;
+      gap:6px;
+      margin-top:11px;
+    }
+
+    .event-target span{
+      font-size:11px;
+      font-weight:800;
+      color:#7e668f;
+      background:#faf1ff;
+      border-radius:999px;
+      padding:6px 8px;
+    }
+
+    .footer{
+      text-align:center;
+      color:#9aa0b4;
+      font-size:12px;
+      margin-top:24px;
+      line-height:1.6;
+    }
+
+    .loading{
+      display:inline-block;
+      width:15px;
+      height:15px;
+      border:2px solid #d8dcf5;
+      border-top-color:var(--primary);
+      border-radius:50%;
+      animation:spin .7s linear infinite;
+      vertical-align:-3px;
+      margin-right:6px;
+    }
+
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    @media (max-width:390px){
+      .app{padding-left:12px;padding-right:12px}
+      .hero h1{font-size:25px}
+      .tab-btn{font-size:13px}
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+
+    <section class="hero">
+      <div class="eyebrow">NEIS 학교생활 조회</div>
+      <h1>학교생활 한눈에 ✨</h1>
+      <p>급식, 시간표, 학사일정을 한 번에 확인해요.</p>
+    </section>
+
+    <section class="search-card">
+      <label class="label" for="schoolName">학교 이름</label>
+      <div class="field">
+        <span>🏫</span>
+        <input id="schoolName" type="text" placeholder="예: 단양중학교" autocomplete="off" />
+      </div>
+
+      <label class="label" for="targetDate">날짜</label>
+      <div class="field">
+        <span>📅</span>
+        <input id="targetDate" type="date" />
+      </div>
+
+      <div class="row">
+        <div>
+          <label class="label" for="grade">학년</label>
+          <div class="field">
+            <span>🎒</span>
+            <select id="grade">
+              <option value="1">1학년</option>
+              <option value="2">2학년</option>
+              <option value="3">3학년</option>
+              <option value="4">4학년</option>
+              <option value="5">5학년</option>
+              <option value="6">6학년</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="label" for="className">반</label>
+          <div class="field">
+            <span>👥</span>
+            <input id="className" type="number" min="1" max="30" value="1" inputmode="numeric" />
+          </div>
+        </div>
+      </div>
+
+      <button class="search-btn" id="searchBtn">학교생활 확인하기</button>
+
+      <div class="status" id="status"></div>
+      <div class="school-options" id="schoolOptions"></div>
+    </section>
+
+    <section class="result-head" id="resultHead">
+      <div>
+        <h2 id="selectedSchool">학교명</h2>
+        <p id="selectedClass">1학년 1반</p>
+      </div>
+      <div class="date-badge" id="selectedDate"></div>
+    </section>
+
+    <nav class="tabs" id="tabs">
+      <button class="tab-btn active" data-tab="meal">🍚 급식</button>
+      <button class="tab-btn" data-tab="timetable">📚 시간표</button>
+      <button class="tab-btn" data-tab="schedule">🎉 학사일정</button>
+    </nav>
+
+    <section class="panel active" id="mealPanel">
+      <div class="meal-list" id="mealList"></div>
+    </section>
+
+    <section class="panel" id="timetablePanel">
+      <div class="timetable" id="timetableList"></div>
+    </section>
+
+    <section class="panel" id="schedulePanel">
+      <div class="event-list" id="eventList"></div>
+    </section>
+
+    <div class="footer">
+      나이스 교육정보 개방 포털 Open API를 이용합니다.<br>
+      실제 급식·시간표·학사일정은 학교 사정에 따라 변경될 수 있습니다.
+    </div>
+
+  </main>
+
+  <script>
+    // 기존 파일의 API 키를 그대로 유지합니다.
+    const API_KEY = "8803359172584ffca3e784292927cdcb";
+
+    const schoolNameInput = document.getElementById("schoolName");
+    const targetDateInput = document.getElementById("targetDate");
+    const gradeInput = document.getElementById("grade");
+    const classNameInput = document.getElementById("className");
+
+    const searchBtn = document.getElementById("searchBtn");
+    const statusEl = document.getElementById("status");
+    const optionsEl = document.getElementById("schoolOptions");
+
+    const resultHeadEl = document.getElementById("resultHead");
+    const selectedSchoolEl = document.getElementById("selectedSchool");
+    const selectedClassEl = document.getElementById("selectedClass");
+    const selectedDateEl = document.getElementById("selectedDate");
+
+    const tabsEl = document.getElementById("tabs");
+
+    const mealListEl = document.getElementById("mealList");
+    const timetableListEl = document.getElementById("timetableList");
+    const eventListEl = document.getElementById("eventList");
+
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, "0");
+    const dd = String(today.getDate()).padStart(2, "0");
+    targetDateInput.value = `${yyyy}-${mm}-${dd}`;
+
+    document.querySelectorAll(".tab-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+        document.querySelectorAll(".panel").forEach(panel => panel.classList.remove("active"));
+
+        button.classList.add("active");
+
+        const tab = button.dataset.tab;
+        document.getElementById(`${tab}Panel`).classList.add("active");
+      });
+    });
+
+    function setStatus(message, loading = false) {
+      statusEl.innerHTML = loading
+        ? `<span class="loading"></span>${message}`
+        : message;
+    }
+
+    function formatDateForApi(dateValue) {
+      return dateValue.replaceAll("-", "");
+    }
+
+    function formatDateForScreen(dateValue) {
+      const [y, m, d] = dateValue.split("-");
+      return `${y}.${m}.${d}`;
+    }
+
+    async function fetchJson(url) {
+      const response = await fetch(url);
+
+      if (!response.ok) {
+        throw new Error(`HTTP 오류: ${response.status}`);
+      }
+
+      return await response.json();
+    }
+
+    function getRows(data, key) {
+      if (!data[key] || !Array.isArray(data[key])) return [];
+
+      const rowBlock = data[key].find(item => item.row);
+      return rowBlock?.row || [];
+    }
+
+    function cleanText(text = "") {
+      return text
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/&amp;/g, "&")
+        .trim();
+    }
+
+    function cleanMenu(menuText) {
+      if (!menuText) return "";
+
+      return menuText
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/\([^)]*\)/g, "")
+        .replace(/\s+\n/g, "\n")
+        .trim();
+    }
+
+    function createEmptyCard(emoji, text) {
+      return `
+        <div class="empty-box">
+          <span class="emoji">${emoji}</span>
+          ${text}
+        </div>
+      `;
+    }
+
+    function createLoadingCard(text) {
+      return `
+        <div class="empty-box">
+          <span class="loading"></span>
+          ${text}
+        </div>
+      `;
+    }
+
+    function clearResults() {
+      mealListEl.innerHTML = "";
+      timetableListEl.innerHTML = "";
+      eventListEl.innerHTML = "";
+
+      resultHeadEl.classList.remove("show");
+      tabsEl.classList.remove("show");
+    }
+
+    async function searchSchool() {
+      const schoolName = schoolNameInput.value.trim();
+      const dateValue = targetDateInput.value;
+
+      optionsEl.innerHTML = "";
+      clearResults();
+
+      if (!schoolName) {
+        setStatus("학교 이름을 입력해주세요. 🏫");
+        schoolNameInput.focus();
+        return;
+      }
+
+      if (!dateValue) {
+        setStatus("날짜를 선택해주세요. 📅");
+        return;
+      }
+
+      if (!API_KEY || API_KEY === "여기에_API_키_입력") {
+        setStatus("index.html의 API_KEY 부분에 발급받은 키를 입력해주세요.");
+        return;
+      }
+
+      setStatus("학교를 찾고 있어요...", true);
+
+      const schoolUrl =
+        `https://open.neis.go.kr/hub/schoolInfo` +
+        `?KEY=${encodeURIComponent(API_KEY)}` +
+        `&Type=json&pIndex=1&pSize=100` +
+        `&SCHUL_NM=${encodeURIComponent(schoolName)}`;
+
+      try {
+        const data = await fetchJson(schoolUrl);
+        const schools = getRows(data, "schoolInfo");
+
+        if (schools.length === 0) {
+          setStatus("학교를 찾지 못했어요. 학교 이름을 다시 확인해주세요. 😢");
+          return;
+        }
+
+        const exactMatches = schools.filter(s => s.SCHUL_NM === schoolName);
+
+        if (exactMatches.length === 1) {
+          await loadSchoolLife(exactMatches[0]);
+          return;
+        }
+
+        if (schools.length === 1) {
+          await loadSchoolLife(schools[0]);
+          return;
+        }
+
+        setStatus("같은 이름의 학교가 여러 곳 있어요. 학교를 선택해주세요.");
+
+        schools.forEach(school => {
+          const btn = document.createElement("button");
+          btn.className = "school-option";
+
+          btn.innerHTML = `
+            <strong>${school.SCHUL_NM}</strong>
+            <small>${school.ORG_RDNMA || "주소 정보 없음"}</small>
+            <small>${school.ATPT_OFCDC_SC_NM || ""} · ${school.SCHUL_KND_SC_NM || ""}</small>
+          `;
+
+          btn.addEventListener("click", () => loadSchoolLife(school));
+          optionsEl.appendChild(btn);
+        });
+
+      } catch (error) {
+        console.error(error);
+        setStatus("학교 정보를 불러오지 못했어요. API 키와 인터넷 연결을 확인해주세요.");
+      }
+    }
+
+    async function loadSchoolLife(school) {
+      optionsEl.innerHTML = "";
+
+      const dateValue = targetDateInput.value;
+      const grade = gradeInput.value;
+      const className = classNameInput.value.trim() || "1";
+
+      selectedSchoolEl.textContent = school.SCHUL_NM;
+      selectedClassEl.textContent =
+        `${grade}학년 ${className}반 · ${school.SCHUL_KND_SC_NM || ""}`;
+      selectedDateEl.textContent = formatDateForScreen(dateValue);
+
+      resultHeadEl.classList.add("show");
+      tabsEl.classList.add("show");
+
+      mealListEl.innerHTML = createLoadingCard("급식을 불러오는 중...");
+      timetableListEl.innerHTML = createLoadingCard("시간표를 불러오는 중...");
+      eventListEl.innerHTML = createLoadingCard("학사일정을 불러오는 중...");
+
+      setStatus("학교생활 정보를 불러오고 있어요...", true);
+
+      const results = await Promise.allSettled([
+        loadMeals(school, dateValue),
+        loadTimetable(school, dateValue, grade, className),
+        loadSchedule(school, dateValue)
+      ]);
+
+      const failCount = results.filter(r => r.status === "rejected").length;
+
+      if (failCount === 0) {
+        setStatus("학교생활 정보를 모두 찾았어요! ✨");
+      } else {
+        setStatus(`일부 정보를 불러오지 못했어요. (${3 - failCount}/3 항목 성공)`);
+      }
+    }
+
+    async function loadMeals(school, dateValue) {
+      const mealDate = formatDateForApi(dateValue);
+
+      const mealUrl =
+        `https://open.neis.go.kr/hub/mealServiceDietInfo` +
+        `?KEY=${encodeURIComponent(API_KEY)}` +
+        `&Type=json&pIndex=1&pSize=100` +
+        `&ATPT_OFCDC_SC_CODE=${encodeURIComponent(school.ATPT_OFCDC_SC_CODE)}` +
+        `&SD_SCHUL_CODE=${encodeURIComponent(school.SD_SCHUL_CODE)}` +
+        `&MLSV_YMD=${mealDate}`;
+
+      try {
+        const data = await fetchJson(mealUrl);
+        const meals = getRows(data, "mealServiceDietInfo");
+        renderMeals(meals);
+      } catch (error) {
+        console.error("급식 오류", error);
+        renderMeals([]);
+        throw error;
+      }
+    }
+
+    function renderMeals(meals) {
+      mealListEl.innerHTML = "";
+
+      const types = [
+        { code:"1", name:"조식", icon:"🌅", cls:"breakfast" },
+        { code:"2", name:"중식", icon:"☀️", cls:"lunch" },
+        { code:"3", name:"석식", icon:"🌙", cls:"dinner" }
+      ];
+
+      types.forEach(type => {
+        const meal = meals.find(m =>
+          String(m.MMEAL_SC_CODE) === type.code ||
+          m.MMEAL_SC_NM === type.name
+        );
+
+        const card = document.createElement("article");
+        card.className = `meal-card ${type.cls}`;
+
+        const menu = meal ? cleanMenu(meal.DDISH_NM) : "";
+
+        const menuHtml = menu
+          ? menu.split("\n")
+              .filter(Boolean)
+              .map(item => `<div>• ${item.trim()}</div>`)
+              .join("")
+          : `<div class="empty">급식 정보가 없어요.</div>`;
+
+        card.innerHTML = `
+          <div class="meal-top">
+            <div class="meal-title">
+              <span class="dot"></span>
+              <span>${type.icon} ${type.name}</span>
+            </div>
+            <div class="cal">${meal?.CAL_INFO || "칼로리 정보 없음"}</div>
+          </div>
+          <div class="menu">${menuHtml}</div>
+        `;
+
+        mealListEl.appendChild(card);
+      });
+    }
+
+    function getTimetableApiInfo(schoolKind) {
+      if (schoolKind?.includes("초등")) {
+        return { endpoint:"elsTimetable", key:"elsTimetable" };
+      }
+
+      if (schoolKind?.includes("중학교")) {
+        return { endpoint:"misTimetable", key:"misTimetable" };
+      }
+
+      if (schoolKind?.includes("고등")) {
+        return { endpoint:"hisTimetable", key:"hisTimetable" };
+      }
+
+      return null;
+    }
+
+    async function loadTimetable(school, dateValue, grade, className) {
+      const api = getTimetableApiInfo(school.SCHUL_KND_SC_NM);
+
+      if (!api) {
+        renderTimetable([], "이 학교 유형은 시간표 API 자동 조회를 지원하지 않아요.");
+        return;
+      }
+
+      const date = formatDateForApi(dateValue);
+
+      const url =
+        `https://open.neis.go.kr/hub/${api.endpoint}` +
+        `?KEY=${encodeURIComponent(API_KEY)}` +
+        `&Type=json&pIndex=1&pSize=100` +
+        `&ATPT_OFCDC_SC_CODE=${encodeURIComponent(school.ATPT_OFCDC_SC_CODE)}` +
+        `&SD_SCHUL_CODE=${encodeURIComponent(school.SD_SCHUL_CODE)}` +
+        `&ALL_TI_YMD=${date}` +
+        `&GRADE=${encodeURIComponent(grade)}` +
+        `&CLASS_NM=${encodeURIComponent(className)}`;
+
+      try {
+        const data = await fetchJson(url);
+        const rows = getRows(data, api.key);
+        renderTimetable(rows);
+      } catch (error) {
+        console.error("시간표 오류", error);
+        renderTimetable([], "시간표 정보를 불러오지 못했어요.");
+        throw error;
+      }
+    }
+
+    function renderTimetable(rows, customMessage = "") {
+      timetableListEl.innerHTML = "";
+
+      if (!rows.length) {
+        timetableListEl.innerHTML = createEmptyCard(
+          "📚",
+          customMessage || "선택한 날짜의 시간표가 없어요."
+        );
+        return;
+      }
+
+      const sorted = [...rows].sort((a,b) => Number(a.PERIO) - Number(b.PERIO));
+
+      sorted.forEach(item => {
+        const card = document.createElement("article");
+        card.className = "period-card";
+
+        card.innerHTML = `
+          <div class="period-number">${item.PERIO || "?"}교시</div>
+          <div class="period-content">
+            <strong>${item.ITRT_CNTNT || "수업 정보 없음"}</strong>
+            <small>${item.GRADE || ""}학년 ${item.CLASS_NM || ""}반</small>
+          </div>
+        `;
+
+        timetableListEl.appendChild(card);
+      });
+    }
+
+    async function loadSchedule(school, dateValue) {
+      const date = formatDateForApi(dateValue);
+
+      const url =
+        `https://open.neis.go.kr/hub/SchoolSchedule` +
+        `?KEY=${encodeURIComponent(API_KEY)}` +
+        `&Type=json&pIndex=1&pSize=100` +
+        `&ATPT_OFCDC_SC_CODE=${encodeURIComponent(school.ATPT_OFCDC_SC_CODE)}` +
+        `&SD_SCHUL_CODE=${encodeURIComponent(school.SD_SCHUL_CODE)}` +
+        `&AA_YMD=${date}`;
+
+      try {
+        const data = await fetchJson(url);
+        const rows = getRows(data, "SchoolSchedule");
+        renderSchedule(rows);
+      } catch (error) {
+        console.error("학사일정 오류", error);
+        renderSchedule([], "학사일정을 불러오지 못했어요.");
+        throw error;
+      }
+    }
+
+    function renderSchedule(rows, customMessage = "") {
+      eventListEl.innerHTML = "";
+
+      if (!rows.length) {
+        eventListEl.innerHTML = createEmptyCard(
+          "🎈",
+          customMessage || "선택한 날짜에 등록된 학사일정이 없어요."
+        );
+        return;
+      }
+
+      rows.forEach(item => {
+        const card = document.createElement("article");
+        card.className = "event-card";
+
+        const targets = [];
+
+        if (item.ONE_GRADE_EVENT_YN === "Y") targets.push("1학년");
+        if (item.TW_GRADE_EVENT_YN === "Y") targets.push("2학년");
+        if (item.THREE_GRADE_EVENT_YN === "Y") targets.push("3학년");
+        if (item.FR_GRADE_EVENT_YN === "Y") targets.push("4학년");
+        if (item.FIV_GRADE_EVENT_YN === "Y") targets.push("5학년");
+        if (item.SIX_GRADE_EVENT_YN === "Y") targets.push("6학년");
+
+        const targetHtml = targets.length
+          ? `<div class="event-target">${targets.map(t => `<span>${t}</span>`).join("")}</div>`
+          : "";
+
+        card.innerHTML = `
+          <strong>🎉 ${item.EVENT_NM || "학교 행사"}</strong>
+          <p>${cleanText(item.EVENT_CNTNT || "세부 내용 없음")}</p>
+          ${targetHtml}
+        `;
+
+        eventListEl.appendChild(card);
+      });
+    }
+
+    searchBtn.addEventListener("click", searchSchool);
+
+    schoolNameInput.addEventListener("keydown", e => {
+      if (e.key === "Enter") searchSchool();
+    });
+  </script>
+</body>
+</html>
